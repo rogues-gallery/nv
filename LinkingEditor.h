@@ -24,6 +24,9 @@
 @class NoteObject;
 @class GlobalPrefs;
 
+// From old version of NSTextFinder.h before including in OSX 10.8
+enum {LAST_FIND_UNKNOWN, LAST_FIND_NO, LAST_FIND_YES};
+
 @interface LinkingEditor : NSTextView
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
 <NSLayoutManagerDelegate>
@@ -33,6 +36,7 @@
     IBOutlet NotesTableView *notesTableView;
 
 	GlobalPrefs *prefsController;
+	id textFinder;
 	BOOL didRenderFully;
 	
 	BOOL didChangeIntoAutomaticRange;
@@ -42,14 +46,9 @@
 	
 	BOOL backgroundIsDark, mouseInside;
 	
-	//ludicrous ivars used to hack NSTextFinder. just write your own, damnit!
-	NSRange selectedRangeDuringFind;
-	NSString *lastImportedFindString;
-	NSString *stringDuringFind;
-	NoteObject *noteDuringFind;
-	
-	IMP defaultIBeamCursorIMP, whiteIBeamCursorIMP;
-}
+    id (*defaultIBeamCursorIMP)(Class, SEL);
+    id (*whiteIBeamCursorIMP)(Class, SEL);
+};
 
 - (NSColor*)_insertionPointColorForForegroundColor:(NSColor*)fgColor backgroundColor:(NSColor*)bgColor;
 - (NSColor*)_linkColorForForegroundColor:(NSColor*)fgColor backgroundColor:(NSColor*)bgColor;
@@ -78,7 +77,7 @@
 - (BOOL)_rangeIsAutoIdentedBullet:(NSRange)aRange;
 
 - (void)setupFontMenu;
-
+- (void)clearFindPanel;
 - (BOOL)didRenderFully;
 @end
 
